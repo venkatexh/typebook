@@ -66,7 +66,8 @@ const cellReducer = produce(
       default:
         return state;
     }
-  }
+  },
+  initialState
 );
 
 const randomId = () => {
