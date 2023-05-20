@@ -5,6 +5,7 @@
   "dependencies": {
     "@babel/parser": "^7.21.3",
     "@babel/traverse": "^7.21.3",
+    "@fortawesome/fontawesome-free": "^5.15.1",
     "@monaco-editor/react": "^4.4.6",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",

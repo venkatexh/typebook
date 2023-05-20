@@ -21,26 +21,29 @@ export const updateCell = (id: string, content: string): UpdateCellAction => {
 export const deleteCell = (id: string): DeleteCellAction => {
   return {
     type: ActionType.DELETE_CELL,
-    payload: id
-  }
+    payload: id,
+  };
 };
 
-export const insertCellBefore = (id: string, cellType: CellType, ): InsertCellBeforeAction => {
+export const insertCellBefore = (
+  id: string | null,
+  cellType: CellType
+): InsertCellBeforeAction => {
   return {
     type: ActionType.INSERT_CELL_BEFORE,
     payload: {
       id,
-      type: cellType
-    }
-  }
+      type: cellType,
+    },
+  };
 };
 
 export const moveCell = (id: string, direction: Direction): MoveCellAction => {
   return {
     type: ActionType.MOVE_CELL,
     payload: {
-      id, 
-      direction
-    }
-  }
+      id,
+      direction,
+    },
+  };
 };
