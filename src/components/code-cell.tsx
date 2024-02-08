@@ -15,9 +15,28 @@ const CodeCell: React.FC<CodeCellProps> = ({ cell }) => {
   const [err, setErr] = useState("");
   const { updateCell } = useActions();
 
+  const showFunction = `
+  import _React from 'react'
+  import * as _ReactDOM from 'react-dom/client'
+
+  var show = (value) => {
+    const root = _ReactDOM.createRoot(document.querySelector('#root'))
+
+    if (typeof value === 'object') {
+      if (value.$$typeof && value.props) {
+        root.render(value, root);
+      } else {
+        document.querySelector('#root').innerHTML = JSON.stringify(value);
+      }
+    } else {
+      document.querySelector('#root').innerHTML = value;
+    }
+  }
+  `;
+
   useEffect(() => {
     const timer = setTimeout(async () => {
-      const output = await bundle(cell.content);
+      const output = await bundle(`${showFunction}\n${cell.content}`);
       setCode(output.code);
       setErr(output.err);
     }, 1000);
@@ -25,7 +44,7 @@ const CodeCell: React.FC<CodeCellProps> = ({ cell }) => {
     return () => {
       clearTimeout(timer);
     };
-  }, [cell.content]);
+  }, [cell.content, showFunction]);
 
   return (
     <Resizable direction="vertical">
