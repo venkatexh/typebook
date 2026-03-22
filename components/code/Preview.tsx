@@ -6,66 +6,86 @@ import fetchPkgPlugin from "@/lib/esbuild/plugins/fetchPkgPlugin";
 function Preview({ code }: { code: string }) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
-  const bundleCode = async (input: string) => {
-    await startService();
+  const wrapCode = (code: string) => {
+    if (code.includes("export default")) return code;
 
-    const res = await esbuild.build({
-      entryPoints: ["index.js"],
-      bundle: true,
-      write: false,
-      plugins: [fetchPkgPlugin(input)],
-      define: {
-        "process.env.NODE_ENV": '"production"',
-        global: "window",
-      },
-      format: "iife",
-      globalName: "App",
-    });
+    return `
+    ${code}
 
-    return res.outputFiles[0].text;
+    let __Component = null;
+    
+    if (typeof App === "function") {
+      __Component = App;
+    } else if (typeof App === "function") {
+      __Component = App;
+    }
+
+    export default __Component;
+  `;
   };
 
-  const runCode = async (code: string) => {
-    const iframe = iframeRef.current;
-    if (!iframe) return;
+  useEffect(() => {
+    const run = async () => {
+      const iframe = iframeRef.current;
+      if (!iframe) return;
 
-    const bundled = await bundleCode(code);
+      await startService();
 
-    const html = `
-      <html>
-        <body>
-          <div id="root"></div>
-          
-          <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
-          <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+      const result = await esbuild.build({
+        entryPoints: ["index.js"],
+        bundle: true,
+        write: false,
+        plugins: [fetchPkgPlugin(wrapCode(code))],
+        define: {
+          "process.env.NODE_ENV": '"production"',
+          global: "window",
+        },
+        format: "iife",
+        globalName: "App",
+      });
 
-          <script>
-        try {
-          ${bundled}
+      const bundled = result.outputFiles[0].text;
 
-          ReactDOM.createRoot(document.getElementById("root")).render(
-            React.createElement(App.default)
-          );
+      const html = `
+          <html>
+            <body style="color: #ffffff;">
+              <div id="root"></div>
 
-        } catch (err) {
-          document.body.innerHTML = '<pre style="color:red;">' + err + '</pre>';
-        }
-          </script>
-        </body>
-      </html>
-    `;
+              <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+              <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
 
-    const doc = iframe.contentDocument!;
-    doc.open();
-    doc.write(html);
-    doc.close();
-  };
+              <script>
+                try {
+                  ${bundled}
 
-    useEffect(() => {
-      runCode(code);
-    }, [code]);
+                  const Component = App?.default;
 
-  return <iframe ref={iframeRef} style={{ width: "100%", height: "300px" }} />;
+                  if (Component) {
+                    ReactDOM.createRoot(root).render(React.createElement(Component));
+                  }
+                } catch (err) {
+                  document.body.innerHTML =
+                    '<pre style="color:red;">' + err + '</pre>';
+                }
+              </script>
+            </body>
+          </html>
+        `;
+
+      iframe.srcdoc = html;
+    };
+
+    const timer = setTimeout(run, 500); // debounce
+    return () => clearTimeout(timer);
+  }, [code]);
+
+  return (
+    <iframe
+      ref={iframeRef}
+      style={{ width: "100%", height: "300px" }}
+      sandbox='allow-scripts'
+    />
+  );
 }
 
 export default Preview;
