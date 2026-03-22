@@ -1,23 +1,39 @@
 "use client";
 
+import { startService } from "@/lib/esbuild";
 import Editor from "@monaco-editor/react";
 import { useRef, useState } from "react";
+import * as esbuild from "esbuild-wasm";
 
 export default function CodePage() {
   const [code, setCode] = useState(`
-    exports.default = function App() {
-  return React.createElement("h1", null, "Hello world");
-};
+    export default function App() {
+  return <h1>JSX is working 🎉</h1>;
+}
   `);
 
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
-  const runCode = () => {
+  const bundleCode = async (input: string) => {
+    await startService();
+
+    const res = await esbuild.transform(input, {
+      loader: "jsx",
+      target: "es2015",
+      format: "iife",
+      jsxFactory: "React.createElement",
+      jsxFragment: "React.Fragment",
+      globalName: "App",
+    });
+
+    return res.code;
+  };
+
+  const runCode = async () => {
     const iframe = iframeRef.current;
     if (!iframe) return;
 
-    const doc = iframe.contentDocument;
-    if (!doc) return;
+    const bundled = await bundleCode(code);
 
     const html = `
       <html>
@@ -28,25 +44,22 @@ export default function CodePage() {
           <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
 
           <script>
-            window.onload = function () {
         try {
-          const exports = {};
-          ${code}
-
-          const App = exports.default;
+          ${bundled}
 
           ReactDOM.createRoot(document.getElementById("root")).render(
-            React.createElement(App)
+            React.createElement(App.default)
           );
+
         } catch (err) {
           document.body.innerHTML = '<pre style="color:red;">' + err + '</pre>';
         }
-      };
           </script>
         </body>
       </html>
     `;
 
+    const doc = iframe.contentDocument!;
     doc.open();
     doc.write(html);
     doc.close();
