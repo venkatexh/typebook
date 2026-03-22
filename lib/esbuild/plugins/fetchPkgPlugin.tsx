@@ -1,4 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+
+const fileCache: Record<string, any> = {};
 const fetchPkgPlugin = (input: string) => ({
   name: "fetch-pkg",
   setup(build: any) {
@@ -72,16 +74,22 @@ const fetchPkgPlugin = (input: string) => ({
     );
 
     build.onLoad({ filter: /.*/, namespace: "a" }, async (args: any) => {
-      console.log("FETCHING:", args.path);
+      if (fileCache[args.path]) {
+        return fileCache[args.path];
+      }
       const res = await fetch(args.path);
       const finalURL = res.url;
       const text = await res.text();
 
-      return {
+      const result = {
         loader: "jsx",
         contents: text,
         resolveDir: new URL("./", finalURL).pathname,
       };
+
+      fileCache[args.path] = result;
+
+      return result;
     });
   },
 });
