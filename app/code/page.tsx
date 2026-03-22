@@ -4,6 +4,7 @@ import { startService } from "@/lib/esbuild";
 import Editor from "@monaco-editor/react";
 import { useRef, useState } from "react";
 import * as esbuild from "esbuild-wasm";
+import fetchPkgPlugin from "@/lib/esbuild/plugins/fetchPkgPlugin";
 
 export default function CodePage() {
   const [code, setCode] = useState(`
@@ -17,16 +18,20 @@ export default function CodePage() {
   const bundleCode = async (input: string) => {
     await startService();
 
-    const res = await esbuild.transform(input, {
-      loader: "jsx",
-      target: "es2015",
+    const res = await esbuild.build({
+      entryPoints: ["index.js"],
+      bundle: true,
+      write: false,
+      plugins: [fetchPkgPlugin(input)],
+      define: {
+        "process.env.NODE_ENV": '"production"',
+        global: "window",
+      },
       format: "iife",
-      jsxFactory: "React.createElement",
-      jsxFragment: "React.Fragment",
       globalName: "App",
     });
 
-    return res.code;
+    return res.outputFiles[0].text;
   };
 
   const runCode = async () => {
