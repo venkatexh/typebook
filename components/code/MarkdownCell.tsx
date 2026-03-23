@@ -1,17 +1,16 @@
-import { Cell } from "@/types/code/cell";
-import { useState } from "react";
-import ReactMarkdown from "react-markdown";
+import MDEditor from "@uiw/react-md-editor";
 
-function MarkdownCell({ cell }: { cell: Cell }) {
-  const [text, setText] = useState(cell.content);
-
+function MarkdownCell({ content, onChange }: MarkdownCellProps) {
   return (
     <div>
-      <textarea value={text} onChange={(e) => setText(e.target.value)} />
-
-      <ReactMarkdown>{text}</ReactMarkdown>
+      <MDEditor value={content} onChange={(v) => onChange(v)} />
     </div>
   );
 }
 
 export default MarkdownCell;
+
+type MarkdownCellProps = {
+  content: string;
+  onChange: (v: string | undefined) => void;
+};

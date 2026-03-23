@@ -24,16 +24,16 @@ export default function CodePage() {
 
   const addMarkdownCell = () => {
     setCells([
-      ...cells,
       {
         id: crypto.randomUUID(),
         type: "text",
         content: "Text",
       },
+      ...cells,
     ]);
   };
 
-  const handleChange = useCallback((content: string, id: string) => {
+  const updateCell = useCallback((content: string, id: string) => {
     setCells((prevCells) =>
       prevCells.map((cell) => {
         if (cell.id === id) {
@@ -113,10 +113,14 @@ export default function CodePage() {
             <CodeCell
               key={cell.id}
               content={cell.content}
-              onChange={(v) => handleChange(v || "", cell.id)}
+              onChange={(v) => updateCell(v || "", cell.id)}
             />
           ) : (
-            <MarkdownCell key={cell.id} cell={cell} />
+            <MarkdownCell
+              key={cell.id}
+              content={cell.content}
+              onChange={(v) => updateCell(v || "", cell.id)}
+            />
           ),
         )}
       </div>
