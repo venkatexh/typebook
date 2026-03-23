@@ -11,25 +11,17 @@ export default function CodePage() {
   const params = useParams();
   const [cells, setCells] = useState<Cell[]>([]);
 
-  const addCodeCell = () => {
-    setCells([
-      {
-        id: crypto.randomUUID(),
-        type: "code",
-        content: `const App = () => <h1>Hi there.</h1>`,
-      },
-      ...cells,
-    ]);
-  };
+  const insertCellAt = (index: number, type: "code" | "text") => {
+    const newCell = {
+      id: crypto.randomUUID(),
+      type,
+      content: "",
+    };
 
-  const addMarkdownCell = () => {
-    setCells([
-      {
-        id: crypto.randomUUID(),
-        type: "text",
-        content: "Text",
-      },
-      ...cells,
+    setCells((prev) => [
+      ...prev.slice(0, index),
+      newCell,
+      ...prev.slice(index),
     ]);
   };
 
@@ -97,29 +89,23 @@ export default function CodePage() {
           Save
         </button>
       </div>
-      <div className='flex justify-center gap-4'>
-        <button onClick={addCodeCell} className='px-4 py-1 border rounded-3xl'>
-          + Code
-        </button>
-        <button
-          onClick={addMarkdownCell}
-          className='px-4 py-1 border rounded-3xl'>
-          + Text
-        </button>
-      </div>
       <div>
-        {cells.map((cell) =>
+        {cells.map((cell, index) =>
           cell.type === "code" ? (
             <CodeCell
+              idx={index}
               key={cell.id}
               content={cell.content}
               onChange={(v) => updateCell(v || "", cell.id)}
+              onAdd={(type) => insertCellAt(index + 1, type)}
             />
           ) : (
             <MarkdownCell
+              idx={index}
               key={cell.id}
               content={cell.content}
               onChange={(v) => updateCell(v || "", cell.id)}
+              onAdd={(type) => insertCellAt(index + 1, type)}
             />
           ),
         )}
