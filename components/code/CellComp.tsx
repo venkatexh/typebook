@@ -4,6 +4,8 @@ import CellMenu from "./CellMenu";
 import Preview from "./Preview";
 import MDEditor from "@uiw/react-md-editor";
 import { Editor } from "@monaco-editor/react";
+import { useModal } from "@/contexts/modal-context";
+import DeleteConfirmation from "../common/DeleteConfirmation";
 
 const CellComp = ({
   onAdd,
@@ -11,12 +13,29 @@ const CellComp = ({
   content,
   onChange,
   moveCell,
+  onDelete,
   type,
 }: CellProps) => {
+  const { openConfirmationModal, closeConfirmationModal } = useModal();
+
   const [showMenu, setShowMenu] = useState(false);
   const [showAddButtonsTop, setShowAddButtonsTop] = useState(false);
   const [showAddButtonsBottom, setShowAddButtonsBottom] = useState(false);
   console.log("MOUNT");
+
+  const handleDeleteClick = () => {
+    openConfirmationModal(
+      <DeleteConfirmation
+        item='Cell'
+        query='Are you sure you want to delete this cell?'
+        onCancel={() => closeConfirmationModal()}
+        onDelete={() => {
+          onDelete();
+          closeConfirmationModal();
+        }}
+      />,
+    );
+  };
 
   return (
     <div
@@ -39,6 +58,8 @@ const CellComp = ({
               moveCell(idx, idx - 1);
             } else if (action == "down") {
               moveCell(idx, idx + 1);
+            } else if (action == "delete") {
+              handleDeleteClick();
             }
           }}
         />
@@ -76,4 +97,5 @@ type CellProps = {
   content: string;
   moveCell: (from: number, to: number) => void;
   onChange: (v: string | undefined) => void;
+  onDelete: () => void;
 };

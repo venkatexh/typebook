@@ -118,6 +118,9 @@ export default function CodePage() {
           moveCell={(from: number, to: number) => {
             moveCell(from, to);
           }}
+          onDelete={() => {
+            setCells((prev) => prev.filter((c) => c.id !== cell.id));
+          }}
           type={cell.type}
         />
       ))}
