@@ -1,11 +1,10 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import CodeCell from "@/components/code/CodeCell";
 import { Cell } from "@/types/code/cell";
-import MarkdownCell from "@/components/code/MarkdownCell";
 import { supabase } from "@/lib/supabase";
 import { useParams } from "next/navigation";
+import CellComp from "@/components/code/CellComp";
 
 export default function CodePage() {
   const params = useParams();
@@ -38,7 +37,6 @@ export default function CodePage() {
 
   const moveCell = (fromIndex: number, toIndex: number) => {
     setCells((prevCells) => {
-      // validate indexes
       if (
         fromIndex < 0 ||
         fromIndex >= prevCells.length ||
@@ -48,18 +46,12 @@ export default function CodePage() {
       ) {
         return prevCells; // do nothing if invalid
       }
-
-      // copy array once
       const updated = [...prevCells];
-
-      // remove the item
       const [movedCell] = updated.splice(fromIndex, 1);
-
-      // insert at new position
       updated.splice(toIndex, 0, movedCell);
-
       return updated;
     });
+
     console.log(cells);
   };
 
@@ -116,35 +108,19 @@ export default function CodePage() {
           Save
         </button>
       </div>
-      <div>
-        {cells.map((cell, index) => (
-          <div key={cell.id}>
-            {cell.type === "code" ? (
-              <CodeCell
-                idx={index}
-                key={cell.id}
-                content={cell.content}
-                onChange={(v) => updateCell(v || "", cell.id)}
-                onAdd={(type) => insertCellAt(index + 1, type)}
-                moveCell={(from: number, to: number) => {
-                  moveCell(from, to);
-                }}
-              />
-            ) : (
-              <MarkdownCell
-                idx={index}
-                key={cell.id}
-                content={cell.content}
-                onChange={(v) => updateCell(v || "", cell.id)}
-                onAdd={(type) => insertCellAt(index + 1, type)}
-                moveCell={(from: number, to: number) => {
-                  moveCell(from, to);
-                }}
-              />
-            )}
-          </div>
-        ))}
-      </div>
+      {cells.map((cell, index) => (
+        <CellComp
+          key={`cell-${cell.id}-pos -${index}`}
+          idx={index}
+          content={cell.content}
+          onChange={(v) => updateCell(v || "", cell.id)}
+          onAdd={(type) => insertCellAt(index + 1, type)}
+          moveCell={(from: number, to: number) => {
+            moveCell(from, to);
+          }}
+          type={cell.type}
+        />
+      ))}
     </div>
   );
 }
