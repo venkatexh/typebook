@@ -26,6 +26,7 @@ const ModalContext = createContext<ModalContextType>({
 export const ModalProvider = ({ children }: { children: React.ReactNode }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
+  const [isCodeCellModalOpen, setIsCodeCellModalOpen] = useState(false);
   const [modalContent, setModalContent] = useState<React.ReactNode>(<></>);
   const [confirmationModalContent, setConfirmationModalContent] =
     useState<React.ReactNode>(<></>);
@@ -44,6 +45,7 @@ export const ModalProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const openCodeCellModal = (content: React.ReactNode) => {
+    setIsCodeCellModalOpen(true);
     setCodeCellModalContent(content);
   };
 
@@ -58,6 +60,7 @@ export const ModalProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const closeCodeCellModal = () => {
+    setIsCodeCellModalOpen(false);
     setCodeCellModalContent(null);
   };
 
@@ -80,9 +83,7 @@ export const ModalProvider = ({ children }: { children: React.ReactNode }) => {
         onClose={closeConfirmationModal}>
         {confirmationModalContent}
       </ConfirmationModal>
-      <CodeCellModal
-        isOpen={!!codeCellModalContent}
-        onClose={closeCodeCellModal}>
+      <CodeCellModal isOpen={isCodeCellModalOpen} onClose={closeCodeCellModal}>
         {codeCellModalContent}
       </CodeCellModal>
     </ModalContext.Provider>
