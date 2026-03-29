@@ -21,7 +21,6 @@ const CellComp = ({
   const [showMenu, setShowMenu] = useState(false);
   const [showAddButtonsTop, setShowAddButtonsTop] = useState(false);
   const [showAddButtonsBottom, setShowAddButtonsBottom] = useState(false);
-  console.log("MOUNT");
 
   const handleDeleteClick = () => {
     openConfirmationModal(
@@ -65,7 +64,7 @@ const CellComp = ({
         />
       )}
       {type == "code" ? (
-        <div className='flex rounded'>
+        <div className='rounded grid grid-cols-2'>
           <Editor
             height='300px'
             defaultLanguage='javascript'
@@ -73,7 +72,7 @@ const CellComp = ({
             onChange={(v) => onChange(v)}
             theme='vs-dark'
           />
-          <Preview code={content} />
+          <Preview code={content} onChange={(v) => onChange(v)} showOpener />
         </div>
       ) : (
         <MDEditor value={content} onChange={(v) => onChange(v)} />

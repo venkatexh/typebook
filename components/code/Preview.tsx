@@ -2,9 +2,12 @@ import { useEffect, useRef } from "react";
 import { startService } from "@/lib/esbuild";
 import * as esbuild from "esbuild-wasm";
 import fetchPkgPlugin from "@/lib/esbuild/plugins/fetchPkgPlugin";
+import { useModal } from "@/contexts/modal-context";
+import CodeCellModalContent from "./CodeCellModalContent";
 
-function Preview({ code }: { code: string }) {
+function Preview({ code, onChange, showOpener }: PreviewProps) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
+  const { openCodeCellModal } = useModal();
 
   const wrapCode = (code: string) => {
     if (code.includes("export default")) return code;
@@ -80,12 +83,34 @@ function Preview({ code }: { code: string }) {
   }, [code]);
 
   return (
-    <iframe
-      ref={iframeRef}
-      style={{ width: "100%", height: "300px" }}
-      sandbox='allow-scripts'
-    />
+    <div>
+      {showOpener && (
+        <div
+          onClick={() =>
+            openCodeCellModal(
+              <CodeCellModalContent
+                content={code}
+                onChange={(v) => onChange(v)}
+              />,
+            )
+          }
+          className='text-right'>
+          Open
+        </div>
+      )}
+      <iframe
+        ref={iframeRef}
+        style={{ width: "100%", height: "300px" }}
+        sandbox='allow-scripts'
+      />
+    </div>
   );
 }
 
 export default Preview;
+
+type PreviewProps = {
+  code: string;
+  onChange: (v: string | undefined) => void;
+  showOpener: boolean;
+};

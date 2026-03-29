@@ -47,7 +47,7 @@ const CodeCell = React.memo(function CodeCell({
           onChange={(v) => onChange(v)}
           theme='vs-dark'
         />
-        <Preview code={content} />
+        <Preview code={content} onChange={() => {}} showOpener />
       </div>
       <div
         onMouseEnter={() => setShowAddButtonsBottom(true)}
