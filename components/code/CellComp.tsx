@@ -19,6 +19,7 @@ const CellComp = ({
   const { openConfirmationModal, closeConfirmationModal } = useModal();
 
   const [showMenu, setShowMenu] = useState(false);
+  const [showMDEditor, setShowMDEditor] = useState(false);
   const [showAddButtonsTop, setShowAddButtonsTop] = useState(false);
   const [showAddButtonsBottom, setShowAddButtonsBottom] = useState(false);
 
@@ -75,7 +76,24 @@ const CellComp = ({
           <Preview code={content} onChange={(v) => onChange(v)} showOpener />
         </div>
       ) : (
-        <MDEditor value={content} onChange={(v) => onChange(v)} />
+        <div>
+          {showMDEditor && (
+            <MDEditor
+              value={content}
+              onChange={(v) => onChange(v)}
+              preview='live'
+              onDoubleClick={() => setShowMDEditor((prev) => !prev)}
+            />
+          )}
+          {!showMDEditor && (
+            <div onDoubleClick={() => setShowMDEditor((prev) => !prev)}>
+              <MDEditor.Markdown
+                source={content}
+                style={{ padding: "20px", borderRadius: "5px" }}
+              />
+            </div>
+          )}
+        </div>
       )}
       <div
         onMouseEnter={() => setShowAddButtonsBottom(true)}
