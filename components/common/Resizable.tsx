@@ -22,8 +22,8 @@ const Resizable: React.FC<ResizeableProps> = ({ direction, children }) => {
       timer = setTimeout(() => {
         setInnerHeight(window.innerHeight);
         setInnerWidth(window.innerWidth);
-        if (width > window.innerWidth * 0.75) {
-          setWidth(window.innerWidth * 0.75);
+        if (width > window.innerWidth * 0.9) {
+          setWidth(window.innerWidth * 0.9);
         }
       }, 100);
     };
@@ -39,8 +39,8 @@ const Resizable: React.FC<ResizeableProps> = ({ direction, children }) => {
   if (direction === "horizontal") {
     resizableProps = {
       className: "resize-horizontal",
-      minConstraints: [innerWidth * 0.2, Infinity],
-      maxConstraints: [innerWidth * 0.75, Infinity],
+      minConstraints: [innerWidth * 0.1, Infinity],
+      maxConstraints: [innerWidth * 0.9, Infinity],
       height: Infinity,
       width,
       resizeHandles: ["e"],
