@@ -1,13 +1,16 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { startService } from "@/lib/esbuild";
 import * as esbuild from "esbuild-wasm";
 import fetchPkgPlugin from "@/lib/esbuild/plugins/fetchPkgPlugin";
 import { useModal } from "@/contexts/modal-context";
 import CodeCellModalContent from "./CodeCellModalContent";
+import { IoMdOpen } from "react-icons/io";
 
 function Preview({ code, onChange, showOpener }: PreviewProps) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const { openCodeCellModal } = useModal();
+
+  const [showOpenerIcon, setShowOpenerIcon] = useState(false);
 
   const wrapCode = (code: string) => {
     if (code.includes("export default")) return code;
@@ -83,8 +86,11 @@ function Preview({ code, onChange, showOpener }: PreviewProps) {
   }, [code]);
 
   return (
-    <div>
-      {showOpener && (
+    <div
+      className='relative grow'
+      onMouseEnter={() => setShowOpenerIcon((prev) => !prev)}
+      onMouseLeave={() => setShowOpenerIcon((prev) => !prev)}>
+      {showOpener && showOpenerIcon && (
         <div
           onClick={() =>
             openCodeCellModal(
@@ -94,13 +100,18 @@ function Preview({ code, onChange, showOpener }: PreviewProps) {
               />,
             )
           }
-          className='text-right'>
-          Open
+          className='absolute -top-2 right-0 z-30'>
+          <IoMdOpen />
         </div>
       )}
+
       <iframe
         ref={iframeRef}
-        style={{ width: "100%", height: "300px" }}
+        style={{
+          width: "100%",
+          height: showOpener ? "300px" : "100%",
+          pointerEvents: "none",
+        }}
         sandbox='allow-scripts'
       />
     </div>
