@@ -6,7 +6,7 @@ import { useModal } from "@/contexts/modal-context";
 import CodeCellModalContent from "./CodeCellModalContent";
 import { IoMdOpen } from "react-icons/io";
 
-function Preview({ code, onChange, showOpener }: PreviewProps) {
+function Preview({ code, onChange, showOpener, pointerNone }: PreviewProps) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const { openCodeCellModal } = useModal();
 
@@ -110,7 +110,7 @@ function Preview({ code, onChange, showOpener }: PreviewProps) {
         style={{
           width: "100%",
           height: showOpener ? "300px" : "100%",
-          pointerEvents: "none",
+          pointerEvents: pointerNone ? "none" : "all",
         }}
         sandbox='allow-scripts'
       />
@@ -124,4 +124,5 @@ type PreviewProps = {
   code: string;
   onChange: (v: string | undefined) => void;
   showOpener: boolean;
+  pointerNone?: boolean;
 };

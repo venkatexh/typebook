@@ -1,11 +1,16 @@
 import Resizable from "@/components/common/Resizable";
 import { Editor } from "@monaco-editor/react";
 import Preview from "./Preview";
+import { useState } from "react";
 
 const CodeCellModalContent = ({ content, onChange }: CodeCellModalContent) => {
+  const [previewPointerEvents, setPreviewPointerEvents] = useState(false);
+  
   return (
     <div className='w-full h-full flex'>
-      <Resizable direction='horizontal'>
+      <Resizable
+        direction='horizontal'
+        setPointerNone={(val: boolean) => setPreviewPointerEvents(val)}>
         <div className='relative h-full w-[calc(100%-10px)] rounded-l-2xl overflow-hidden'>
           <Editor
             height='100%'
@@ -21,6 +26,7 @@ const CodeCellModalContent = ({ content, onChange }: CodeCellModalContent) => {
         code={content}
         showOpener={false}
         onChange={(v) => onChange(v)}
+        pointerNone={previewPointerEvents}
       />
     </div>
   );

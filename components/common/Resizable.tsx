@@ -6,9 +6,14 @@ import { useEffect, useState } from "react";
 interface ResizeableProps {
   direction: "horizontal" | "vertical";
   children: React.ReactNode;
+  setPointerNone: (value: boolean) => void;
 }
 
-const Resizable: React.FC<ResizeableProps> = ({ direction, children }) => {
+const Resizable: React.FC<ResizeableProps> = ({
+  direction,
+  children,
+  setPointerNone,
+}) => {
   const [innerHeight, setInnerHeight] = useState(window.innerHeight);
   const [innerWidth, setInnerWidth] = useState(window.innerWidth);
   const [width, setWidth] = useState(window.innerWidth * 0.5);
@@ -32,7 +37,7 @@ const Resizable: React.FC<ResizeableProps> = ({ direction, children }) => {
     return () => {
       window.removeEventListener("resize", listener);
     };
-  }, [width]);
+  }, [setPointerNone, width]);
 
   let resizableProps: ResizableBoxProps;
 
@@ -58,7 +63,17 @@ const Resizable: React.FC<ResizeableProps> = ({ direction, children }) => {
     };
   }
 
-  return <ResizableBox {...resizableProps}>{children}</ResizableBox>;
+  return (
+    <ResizableBox
+      {...resizableProps}
+      onResizeStart={() => {
+        console.log("drag");
+        setPointerNone(true);
+      }}
+      onResizeStop={() => setPointerNone(false)}>
+      {children}
+    </ResizableBox>
+  );
 };
 
 export default Resizable;
