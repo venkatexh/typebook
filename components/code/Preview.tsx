@@ -53,9 +53,9 @@ function Preview({ code, onChange, showOpener, pointerNone }: PreviewProps) {
       const bundled = result.outputFiles[0].text;
 
       const html = `
-          <html>
-            <body style="color: #ffffff;">
-              <div id="root"></div>
+          <html style="height: 100%;">
+            <body style="color: #ffffff; height: 100%;">
+              <div id="root" style="height: 100%;"></div>
 
               <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
               <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
