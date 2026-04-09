@@ -1,7 +1,5 @@
 "use client";
 
-import moment from "moment";
-import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import { useEffect, useState } from "react";
 import { useModal } from "@/contexts/modal-context";
@@ -9,6 +7,7 @@ import { useModal } from "@/contexts/modal-context";
 import NewProjectModal, {
   NewProjectInput,
 } from "@/components/projects/NewProjectModal";
+import ProjectCard from "@/components/projects/ProjectCard";
 
 export default function ProjectsPage() {
   const { openModal, closeModal } = useModal();
@@ -69,31 +68,15 @@ export default function ProjectsPage() {
       </div>
       <div className='py-6 flex flex-wrap gap-4'>
         {projects.map((project) => (
-          <Link key={project.id} href={`/projects/${project.id}`}>
-            <div key={project.id} className='bg-slate-900 p-4 rounded-xl'>
-              <div className='flex justify-start items-center gap-2'>
-                <div className='w-8 h-8 bg-amber-500  flex justify-center items-center rounded-full'>
-                  {project.name.slice(0, 1).toUpperCase()}
-                </div>
-                <div>{project.name}</div>
-              </div>
-              <div className='py-4 text-sm text-gray-300'>
-                {project.description}
-              </div>
-              <div className='text-xs text-right'>
-                {moment(project.createdAt).format("MMM YYYY")}
-              </div>
-            </div>
-          </Link>
+          <ProjectCard key={project.id} project={project} />
         ))}
       </div>
     </div>
   );
-
-  type Project = {
-    id: string;
-    name: string;
-    description: string;
-    createdAt: string;
-  };
 }
+export type Project = {
+  id: string;
+  name: string;
+  description: string;
+  createdAt: string;
+};
