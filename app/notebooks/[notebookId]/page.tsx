@@ -10,18 +10,25 @@ export default function CodePage() {
   const params = useParams();
   const [cells, setCells] = useState<Cell[]>([]);
 
-  const insertCellAt = (index: number, type: "code" | "text") => {
+  const insertCellAt = (
+    currIndex: number,
+    type: "code" | "text",
+    pos: "top" | "bottom",
+  ) => {
     const newCell = {
       id: crypto.randomUUID(),
       type,
       content: "",
     };
-
-    setCells((prev) => [
-      ...prev.slice(0, index),
-      newCell,
-      ...prev.slice(index),
-    ]);
+    if (pos == "top") {
+      setCells((prev) => [newCell, ...prev]);
+    } else {
+      setCells((prev) => [
+        ...prev.slice(0, currIndex + 1),
+        newCell,
+        ...prev.slice(currIndex + 1),
+      ]);
+    }
   };
 
   const updateCell = useCallback((content: string, id: string) => {
@@ -114,7 +121,7 @@ export default function CodePage() {
           idx={index}
           content={cell.content}
           onChange={(v) => updateCell(v || "", cell.id)}
-          onAdd={(type) => insertCellAt(index + 1, type)}
+          onAdd={(type, pos) => insertCellAt(index, type, pos)}
           moveCell={(from: number, to: number) => {
             moveCell(from, to);
           }}

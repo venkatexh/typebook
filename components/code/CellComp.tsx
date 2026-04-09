@@ -110,7 +110,7 @@ export default React.memo(CellComp);
 type CellProps = {
   idx: number;
   type: "code" | "text";
-  onAdd: (pos: "code" | "text") => void;
+  onAdd: (type: "code" | "text", pos: "top" | "bottom") => void;
   content: string;
   moveCell: (from: number, to: number) => void;
   onChange: (v: string | undefined) => void;
