@@ -10,6 +10,10 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --color-button-primary: oklch(70.4% 0.14 182.503);
+  --color-button-primary-hover: oklch(60% 0.118 184.704);
+  --color-button-secondary: oklch(71.2% 0.194 13.428);
+  --color-button-secondary-hover: oklch(64.5% 0.246 16.439);
 }
 
 @media (prefers-color-scheme: dark) {
