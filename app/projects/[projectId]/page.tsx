@@ -4,15 +4,18 @@ import moment from "moment";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
 
 export default function ProjectPage() {
+  const params = useParams();
   const [notebooks, setNotebooks] = useState<Notebook[]>([]);
 
   useEffect(() => {
     const fetchNotebooks = async () => {
       const { data, error } = await supabase
         .from("notebooks")
-        .select("id, title, description, createdAt:created_at");
+        .select("id, title, description, createdAt:created_at")
+        .eq("project_id", params.projectId);
       if (error) {
         console.log(error);
       }
@@ -22,7 +25,7 @@ export default function ProjectPage() {
     };
 
     fetchNotebooks();
-  }, []);
+  }, [params.projectId]);
 
   return (
     <div className='p-12'>
