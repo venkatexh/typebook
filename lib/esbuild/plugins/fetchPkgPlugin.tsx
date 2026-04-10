@@ -16,7 +16,7 @@ const fetchPkgPlugin = (input: string) => ({
     build.onResolve({ filter: /^react-dom\/client$/ }, () => {
       return { path: "react-dom/client", external: true };
     });
-    
+
     build.onResolve(
       {
         filter: /^index\.js$/,
@@ -67,7 +67,7 @@ const fetchPkgPlugin = (input: string) => ({
         }
 
         return {
-          path: `https://esm.sh/${args.path}?bundle&dev`,
+          path: `https://esm.sh/${args.path}`,
           namespace: "a",
         };
       },

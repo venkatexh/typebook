@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { startService } from "@/lib/esbuild";
 import * as esbuild from "esbuild-wasm";
 import fetchPkgPlugin from "@/lib/esbuild/plugins/fetchPkgPlugin";
@@ -12,15 +12,29 @@ function Preview({ code, onChange, showOpener, pointerNone }: PreviewProps) {
 
   const [showOpenerIcon, setShowOpenerIcon] = useState(false);
 
-  const wrapCode = (code: string) => {
-    return `
-    const React = window.React;
-    const { useState, useEffect } = React;
+  const transformReactImports = (code: string) => {
+    return (
+      code
+        // remove default import
+        .replace(/import\s+React\s+from\s+['"]react['"];?/g, "")
 
-    ${code}
-  `;
+        // remove named imports
+        .replace(/import\s+{([^}]+)}\s+from\s+['"]react['"];?/g, (_, hooks) => {
+          return `const { ${hooks} } = window.React;`;
+        })
+    );
   };
 
+  const wrapCode = useCallback((code: string) => {
+    const transformed = transformReactImports(code);
+
+    return `
+    const React = window.React;
+
+    ${transformed}
+  `;
+  }, []);
+  
   useEffect(() => {
     const run = async () => {
       const iframe = iframeRef.current;
@@ -81,7 +95,7 @@ function Preview({ code, onChange, showOpener, pointerNone }: PreviewProps) {
 
     const timer = setTimeout(run, 500); // debounce
     return () => clearTimeout(timer);
-  }, [code]);
+  }, [code, wrapCode]);
 
   return (
     <div
