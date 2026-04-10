@@ -4,6 +4,19 @@ const fileCache: Record<string, any> = {};
 const fetchPkgPlugin = (input: string) => ({
   name: "fetch-pkg",
   setup(build: any) {
+
+    build.onResolve({ filter: /^react$/ }, () => {
+      return { path: "react", external: true };
+    });
+
+    build.onResolve({ filter: /^react-dom$/ }, () => {
+      return { path: "react-dom", external: true };
+    });
+
+    build.onResolve({ filter: /^react-dom\/client$/ }, () => {
+      return { path: "react-dom/client", external: true };
+    });
+    
     build.onResolve(
       {
         filter: /^index\.js$/,
@@ -82,7 +95,7 @@ const fetchPkgPlugin = (input: string) => ({
       const text = await res.text();
 
       const result = {
-        loader: "jsx",
+        loader: "js",
         contents: text,
         resolveDir: new URL("./", finalURL).pathname,
       };

@@ -13,20 +13,11 @@ function Preview({ code, onChange, showOpener, pointerNone }: PreviewProps) {
   const [showOpenerIcon, setShowOpenerIcon] = useState(false);
 
   const wrapCode = (code: string) => {
-    if (code.includes("export default")) return code;
-
     return `
+    const React = window.React;
+    const { useState, useEffect } = React;
+
     ${code}
-
-    let __Component = null;
-    
-    if (typeof App === "function") {
-      __Component = App;
-    } else if (typeof App === "function") {
-      __Component = App;
-    }
-
-    export default __Component;
   `;
   };
 
@@ -48,6 +39,8 @@ function Preview({ code, onChange, showOpener, pointerNone }: PreviewProps) {
         },
         format: "iife",
         globalName: "App",
+        external: ["react", "react-dom"],
+        inject: []
       });
 
       const bundled = result.outputFiles[0].text;
@@ -61,12 +54,17 @@ function Preview({ code, onChange, showOpener, pointerNone }: PreviewProps) {
               <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
 
               <script>
+                window.React = React;
+                window.ReactDOM = ReactDOM;
+              </script>
+              <script>
                 try {
                   ${bundled}
 
                   const Component = App?.default;
 
                   if (Component) {
+                  const root = document.getElementById("root");
                     ReactDOM.createRoot(root).render(React.createElement(Component));
                   }
                 } catch (err) {
