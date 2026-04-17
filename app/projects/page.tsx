@@ -14,6 +14,16 @@ export default function ProjectsPage() {
   const [projects, setProjects] = useState<Project[]>([]);
 
   useEffect(() => {
+    const getSession = async () => {
+      const { data, error } = await supabase.auth.getSession();
+      if (error) {
+        console.log(error);
+      }
+      if (!data.session) {
+        window.location.href = "/login";
+      }
+    };
+
     const fetchData = async () => {
       const { data, error } = await supabase.from("projects").select(`
         id, name, description, createdAt:created_at`);
@@ -25,7 +35,7 @@ export default function ProjectsPage() {
         setProjects(data);
       }
     };
-
+    getSession();
     fetchData();
   }, []);
 
